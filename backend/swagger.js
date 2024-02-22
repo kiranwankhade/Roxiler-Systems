@@ -11,7 +11,7 @@ const options = {
     },
     servers: [
       {
-        url: 'http://localhost:8000', // Update with your server URL
+        url: 'https://easy-cyan-coati-tux.cyclic.app/', // Update with your server URL
       },
     ],
   },
