@@ -3,7 +3,6 @@ const { TransactionModel } = require('../Models/Transaction');
 
 const barChartRouter = express.Router();
 
-
 barChartRouter.get('/', async (req, res) => {
     try {
         const month = req.query.month;
