@@ -9,7 +9,7 @@ const combinedDataRouter = express.Router();
 const fetchStatistics = async (month) => {
     // Implement logic to fetch statistics from the statistics endpoint
     // For example:
-    const statisticsResponse = await axios.get(`https://easy-cyan-coati-tux.cyclic.app/statistics?month=${month}`);
+    const statisticsResponse = await axios.get(`http://localhost:8000/statistics?month=${month}`);
     // console.log('statisticsResponse:', statisticsResponse)
     return statisticsResponse.data;
 };
@@ -18,7 +18,7 @@ const fetchStatistics = async (month) => {
 const fetchBarChartData = async (month) => {
     // Implement logic to fetch bar chart data for the specified month from the barchart endpoint
     // For example:
-    const barChartDataResponse = await axios.get(`https://easy-cyan-coati-tux.cyclic.app/barChart?month=${month}`);
+    const barChartDataResponse = await axios.get(`http://localhost:8000/barChart?month=${month}`);
     return barChartDataResponse.data;
 };
 
@@ -26,7 +26,7 @@ const fetchBarChartData = async (month) => {
 const fetchPieChartData = async (month) => {
     // Implement logic to fetch pie chart data for the specified month from the piechart endpoint
     // For example:
-    const pieChartDataResponse = await axios.get(`https://easy-cyan-coati-tux.cyclic.app/pieChart?month=${month}`);
+    const pieChartDataResponse = await axios.get(`http://localhost:8000/pieChart?month=${month}`);
     return pieChartDataResponse.data;
 };
 

@@ -32,7 +32,7 @@ productsRouter.get('/', async (req, res) => {
         // If the count is less than 60, insert transactions
         if (count < 60) {
             await TransactionModel.insertMany(transactionsWithMonth);
-            res.send(TransactionModel)
+            res.send(TransactionModel);
         } else {
             const existingData = await TransactionModel.find();
             res.json(existingData);

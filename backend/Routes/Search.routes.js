@@ -3,9 +3,8 @@ const { TransactionModel } = require("../Models/Transaction");
 
 const searchRouter = express.Router();
 
-
 // Handler function to search transactions
-const searchTransactions = async (searchText, res) => {
+const searchTransactions = async (searchText, res, page, perPage) => {
   try {
     const encodedSearchText = encodeURIComponent(searchText);
     console.log("encodedSearchText:", encodedSearchText);
@@ -45,8 +44,18 @@ const searchTransactions = async (searchText, res) => {
 
     // Fetch all transactions matching the query
     const transactions = await TransactionModel.find(query);
+    console.log("transactionsFunc:", transactions);
 
-    res.json(transactions);
+    // Calculate total pages based on total count and perPage
+    const totalPages = Math.ceil(transactions.length / perPage);
+
+    // Paginate the results
+    const startIndex = (page - 1) * perPage;
+    const endIndex = page * perPage;
+    const paginatedTransactions = transactions.slice(startIndex, endIndex);
+
+    // Send response with paginated transactions and total pages
+    res.json({ transactions: paginatedTransactions, totalPages: totalPages });
   } catch (error) {
     res
       .status(500)
@@ -67,20 +76,64 @@ searchRouter.get("/", async (req, res) => {
 
     // Execute the search only if there are search words
     if (searchText.length > 0) {
-        // Debounce the search function
-        setTimeout(() => {
-            searchTransactions(searchText, res);
-        }, delay);
+      // Debounce the search function
+      setTimeout(() => {
+        searchTransactions(searchText, res, page, perPage);
+      }, delay);
     } else {
-        // If search parameter is empty, return all records with pagination
-        const transactions = await TransactionModel.find().skip(skip).limit(perPage);
-        res.json(transactions);
-    }
+      // If search parameter is empty, return all records with pagination
+      const transactions = await TransactionModel.find().maxTimeMS(30000);
 
+      // Calculate total pages based on total count and perPage
+      const totalPages = Math.ceil(transactions.length / perPage);
+
+      // Paginate the results
+      const startIndex = (page - 1) * perPage;
+      const endIndex = page * perPage;
+      const paginatedTransactions = transactions.slice(startIndex, endIndex);
+
+      // Send response with paginated transactions and total pages
+      res.json({ transactions: paginatedTransactions, totalPages: totalPages });
+    }
   } catch (error) {
     res
       .status(500)
       .json({ message: "Internal server error", error: error.message });
+  }
+});
+
+searchRouter.get("/search_month", async (req, res) => {
+  try {
+    const { month, page = 1, perPage = 10 } = req.query;
+    const skip = (page - 1) * perPage;
+
+    let query = {};
+
+    
+    // If month parameter is provided and not empty, filter transactions by month
+    if (month && month.trim() !== "") {
+      query = { month };
+    }
+
+    // Query transactions for the specified month
+    const transactions = await TransactionModel.find(query)
+      .skip(skip)
+      .limit(perPage);
+
+    // Query total count of transactions for pagination
+    const totalCountQuery = month && month.trim() !== "" ? { month } : {};
+    const totalCount = await TransactionModel.countDocuments(totalCountQuery);
+
+    // Calculate total pages based on total count and perPage
+    const totalPages = Math.ceil(totalCount / perPage);
+
+    res.json({
+      transactions: transactions,
+      totalPages: totalPages,
+    });
+  } catch (error) {
+    console.error("Error fetching transactions:", error);
+    res.status(500).json({ error: "Internal Server Error" });
   }
 });
 
@@ -113,4 +166,3 @@ module.exports = {
  *       500:
  *         description: Internal server error
  */
-
