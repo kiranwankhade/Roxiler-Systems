@@ -120,6 +120,9 @@ searchRouter.get("/search_month", async (req, res) => {
       .skip(skip)
       .limit(perPage);
 
+    // // Query total count of transactions for pagination
+    // const totalCount = await TransactionModel.countDocuments({ month });
+
     // Query total count of transactions for pagination
     const totalCountQuery = month && month.trim() !== "" ? { month } : {};
     const totalCount = await TransactionModel.countDocuments(totalCountQuery);
